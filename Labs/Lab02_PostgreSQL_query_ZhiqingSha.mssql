@@ -1,0 +1,18 @@
+/* Collaboration: Zhiqing Sha, Sophie Guo, Yitong Zhao, Fanxi Chen */
+
+/* Idea: get a list of actorIDs for those who meet requirements, then query all movie info related to them */
+/* outer most query: retrive movie titles, release years and names */
+/* inner query: retrieve actor IDs only from (ID, last name) */
+/* inner most query: get the 3 actor IDs and last names that meet the requirements */
+SELECT f.title, f.release_year, actor.first_name, actor.last_name
+FROM film f LEFT JOIN film_actor fa USING(film_id)
+			LEFT JOIN actor USING(actor_id)
+WHERE actor.actor_id IN(	SELECT actor_id
+							FROM (	SELECT DISTINCT actor.actor_id, actor.last_name
+									FROM film f LEFT JOIN film_actor fa USING(film_id)
+												LEFT JOIN actor USING(actor_id)
+									WHERE f.rating = 'NC-17'
+									ORDER BY actor.last_name
+					   				LIMIT 3) AS temp_table
+					   );
+					   
